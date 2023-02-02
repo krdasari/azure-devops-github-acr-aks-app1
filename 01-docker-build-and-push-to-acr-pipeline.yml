@@ -17,7 +17,26 @@ variables:
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  #vmImageName: 'ubuntu-latest'
+
+#### run pipeline on multiple operating systems
+#strategy:
+ # matrix:
+  #  linux:
+   #   operatingSystem: 'ubuntu-latest'   
+    #mac:
+     # operatingSystem: 'macos-latest'
+#pool:
+ # vmImage: $(operatingSystem)
+ ####
+
+#Stages always run sequentially.
+#But However the jobs within stages might run parallely.
+
+pool:
+  name: systempool
+  demands:
+   - agent.name -equals centos8
 
 stages:
 - stage: Build
