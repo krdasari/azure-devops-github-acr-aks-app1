@@ -8,6 +8,11 @@ trigger:
 resources:
 - repo: self
 
+pool:
+  name: systempool
+  demands:
+   - agent.name -equals centos8
+   
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '572ed165-4c26-4bda-981b-a22851af566c'
@@ -33,10 +38,7 @@ variables:
 #Stages always run sequentially.
 #But However the jobs within stages might run parallely.
 
-pool:
-  name: systempool
-  demands:
-   - agent.name -equals centos8
+
 
 stages:
 - stage: Build
@@ -45,7 +47,9 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      vmImage: $(vmImageName)
+      name: systempool
+      demands: 
+        - agent.name -equals centos8
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
