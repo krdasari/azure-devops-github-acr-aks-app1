@@ -1,0 +1,46 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+pool:
+  name: systempool
+  demands:
+    - agent.name -equals centos8
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '6074a6e3-b00e-4487-9902-3f47c6a619b2'
+  imageRepository: 'app1nginx'
+  containerRegistry: 'aksdevopsacr1989.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+  # Agent VM image name
+  #vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      name: systempool
+      demands:
+        - agent.name -equals centos8
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
