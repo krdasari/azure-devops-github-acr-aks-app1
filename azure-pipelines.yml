@@ -9,7 +9,7 @@ resources:
 - repo: self
 
 pool:
-  name: systempool
+  name: self-hosted-pool
   demands:
     - agent.name -equals centos8
 
