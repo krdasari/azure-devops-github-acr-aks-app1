@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: app1-nginx
-          image: aksdevopsacr19890101.azurecr.io/app1/app1-nginx:$(Build.BuildId)
+          image: aksdevopsacr19890101.azurecr.io/app1/app1-nginx:33
           ports:
             - containerPort: 80
       imagePullSecrets:
