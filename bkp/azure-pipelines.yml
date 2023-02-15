@@ -8,21 +8,16 @@ trigger:
 resources:
 - repo: self
 
-pool:
-  name: self-hosted-pool
-  demands:
-    - agent.name -equals centos8
-
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '6074a6e3-b00e-4487-9902-3f47c6a619b2'
-  imageRepository: 'app1nginx'
-  containerRegistry: 'aksdevopsacr1989.azurecr.io'
+  dockerRegistryServiceConnection: '84e1b49e-bcd4-4576-bf4b-049c84d81780'
+  imageRepository: 'app1/app1-nginx'
+  containerRegistry: 'aksdevopsacr19890101.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
-  #vmImageName: 'ubuntu-latest'
+  vmImageName: 'ubuntu-latest'
 
 stages:
 - stage: Build
@@ -31,9 +26,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: self-hosted-pool
-      demands:
-        - agent.name -equals centos8
+      vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -44,3 +37,13 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)'
+        Contents: '**/kube-manifests/*.yml'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'kubemanifests'
+        publishLocation: 'Container'
